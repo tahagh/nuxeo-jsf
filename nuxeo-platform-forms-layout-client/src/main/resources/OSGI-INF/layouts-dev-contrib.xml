@@ -1,0 +1,179 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.forms.layout.dev">
+
+  <documentation>
+    Component that provides layouts/widgets contributions used when
+    rendering layouts/widgets dev screens
+
+    @author Anahide Tchertchian
+    (at@nuxeo.com)
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="widget_dev_layout">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>name</widget>
+        </row>
+        <row>
+          <widget>type</widget>
+        </row>
+        <row>
+          <widget>typeCategory</widget>
+        </row>
+        <row>
+          <widget>mode</widget>
+        </row>
+        <row>
+          <widget>layoutName</widget>
+        </row>
+        <row>
+          <widget>dynamic</widget>
+        </row>
+        <row>
+          <widget>properties</widget>
+        </row>
+      </rows>
+      <widget name="name" type="text">
+        <labels>
+          <label mode="any">Name</label>
+        </labels>
+        <fields>
+          <field>name</field>
+        </fields>
+      </widget>
+      <widget name="type" type="text">
+        <labels>
+          <label mode="any">Type</label>
+        </labels>
+        <fields>
+          <field>type</field>
+        </fields>
+      </widget>
+      <widget name="typeCategory" type="text">
+        <labels>
+          <label mode="any">Type category</label>
+        </labels>
+        <fields>
+          <field>typeCategory</field>
+        </fields>
+      </widget>
+      <widget name="mode" type="text">
+        <labels>
+          <label mode="any">Mode</label>
+        </labels>
+        <fields>
+          <field>mode</field>
+        </fields>
+      </widget>
+      <widget name="layoutName" type="text">
+        <labels>
+          <label mode="any">Layout</label>
+        </labels>
+        <fields>
+          <field>layoutName</field>
+        </fields>
+        <widgetModes>
+          <mode value="any">
+            #{nxu:test(layoutValue.global, mode, 'hidden')}
+          </mode>
+        </widgetModes>
+      </widget>
+      <widget name="dynamic" type="text">
+        <labels>
+          <label mode="any">Dynamic</label>
+        </labels>
+        <fields>
+          <field>dynamic</field>
+        </fields>
+      </widget>
+      <widget name="properties" type="text">
+        <labels>
+          <label mode="any">Properties</label>
+        </labels>
+        <fields>
+          <field>properties</field>
+        </fields>
+      </widget>
+    </layout>
+
+    <layout name="layout_dev_layout">
+      <templates>
+        <template mode="any">
+          /layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>name</widget>
+        </row>
+        <row>
+          <widget>mode</widget>
+        </row>
+        <row>
+          <widget>dynamic</widget>
+        </row>
+        <row>
+          <widget>properties</widget>
+        </row>
+        <row>
+          <widget>definition</widget>
+        </row>
+      </rows>
+      <widget name="name" type="text">
+        <labels>
+          <label mode="any">Name</label>
+        </labels>
+        <fields>
+          <field>name</field>
+        </fields>
+      </widget>
+      <widget name="mode" type="text">
+        <labels>
+          <label mode="any">Mode</label>
+        </labels>
+        <fields>
+          <field>mode</field>
+        </fields>
+      </widget>
+      <widget name="dynamic" type="text">
+        <labels>
+          <label mode="any">Dynamic</label>
+        </labels>
+        <fields>
+          <field>dynamic</field>
+        </fields>
+      </widget>
+      <widget name="properties" type="text">
+        <labels>
+          <label mode="any">Properties</label>
+        </labels>
+        <fields>
+          <field>properties</field>
+        </fields>
+      </widget>
+      <widget name="definition" type="template">
+        <labels>
+          <label mode="any">Json definition</label>
+        </labels>
+        <fields>
+          <field>name</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">
+            /widgets/dev/layout_definition_link.xhtml
+          </property>
+        </properties>
+      </widget>
+    </layout>
+
+  </extension>
+
+</component>

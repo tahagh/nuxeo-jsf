@@ -263,6 +263,7 @@ public class WidgetTypeTagHandler extends TagHandler {
                 translatedValue.booleanValue(), null, fieldsValue, widgetProps,
                 null);
         wDef.setTypeCategory(categoryValue);
+        wDef.setDynamic(true);
         Widget widget = layoutService.createWidget(ctx, wDef, modeValue,
                 valueName, subWidgetsValue);
 

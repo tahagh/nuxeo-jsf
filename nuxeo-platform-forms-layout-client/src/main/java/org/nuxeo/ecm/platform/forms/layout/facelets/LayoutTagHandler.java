@@ -39,6 +39,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.Layout;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
+import org.nuxeo.ecm.platform.forms.layout.facelets.dev.DevTagHandler;
+import org.nuxeo.ecm.platform.forms.layout.facelets.dev.LayoutDevTagHandler;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
@@ -48,6 +50,7 @@ import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletHandler;
 import com.sun.facelets.el.VariableMapperWrapper;
 import com.sun.facelets.tag.TagAttribute;
+import com.sun.facelets.tag.TagAttributes;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagException;
 import com.sun.facelets.tag.TagHandler;
@@ -399,9 +402,26 @@ public class LayoutTagHandler extends TagHandler {
                         FaceletHandlerHelper.getTagAttributes(srcAttr),
                         nextHandler);
                 FaceletHandler includeHandler = new IncludeHandler(config);
-                FaceletHandler handler = helper.getAliasTagHandler(
-                        layoutTagConfigId, vars, blockedPatterns,
-                        includeHandler);
+
+                FaceletHandler handler;
+                // avoid stack overflow when using layout tags within the dev
+                // handler
+                ValueExpression disableDevAttr = eFactory.createValueExpression(
+                        ctx, "#{nxlDevModeDisabled}", Boolean.class);
+                if (Framework.isDevModeSet()
+                        && !Boolean.TRUE.equals(disableDevAttr.getValue(ctx))) {
+                    // decorate handler with dev handler
+                    FaceletHandler devHandler = getDevFaceletHandler(ctx,
+                            helper, config, layoutInstance);
+                    FaceletHandler layoutDevHandler = new DevTagHandler(config,
+                            layoutInstance.getName(), includeHandler,
+                            devHandler);
+                    handler = helper.getAliasTagHandler(layoutTagConfigId,
+                            vars, blockedPatterns, layoutDevHandler);
+                } else {
+                    handler = helper.getAliasTagHandler(layoutTagConfigId,
+                            vars, blockedPatterns, includeHandler);
+                }
                 // apply
                 handler.apply(ctx, parent);
             } else {
@@ -473,6 +493,20 @@ public class LayoutTagHandler extends TagHandler {
         log.error(message);
         ComponentHandler output = helper.getErrorComponentHandler(null, message);
         output.apply(ctx, parent);
+    }
+
+    protected FaceletHandler getDevFaceletHandler(FaceletContext ctx,
+            FaceletHandlerHelper helper, TagConfig config, Layout layout) {
+        // use the default dev handler for widget types
+        TagAttribute attr = helper.createAttribute(
+                "layout",
+                String.format("#{%s}",
+                        RenderVariables.layoutVariables.layout.name()));
+        TagAttributes devWidgetAttributes = FaceletHandlerHelper.getTagAttributes(attr);
+        TagConfig devWidgetConfig = TagConfigFactory.createTagConfig(config,
+                layout.getTagConfigId(), devWidgetAttributes,
+                new LeafFaceletHandler());
+        return new LayoutDevTagHandler(devWidgetConfig);
     }
 
 }

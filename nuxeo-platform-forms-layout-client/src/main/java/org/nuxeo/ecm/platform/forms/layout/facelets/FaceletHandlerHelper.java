@@ -44,7 +44,6 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOptions;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasTagHandler;
-import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasVariableMapper;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
@@ -80,6 +79,16 @@ public final class FaceletHandlerHelper {
     public static final String WIDGET_ID_PREFIX = "nxw_";
 
     public static final String MESSAGE_ID_SUFFIX = "_message";
+
+    /**
+     * @since 5.9.1
+     */
+    public static final String DEV_CONTAINER_ID_SUFFIX = "_dev_container";
+
+    /**
+     * @since 5.9.1
+     */
+    public static final String DEV_REGION_ID_SUFFIX = "_dev_region";
 
     private static final String LAYOUT_ID_COUNTERS = "org.nuxeo.ecm.platform.layouts.LAYOUT_ID_COUNTERS";
 
@@ -197,6 +206,22 @@ public final class FaceletHandlerHelper {
     public String generateMessageId(String widgetName) {
         return generateUniqueId(WIDGET_ID_PREFIX + widgetName
                 + MESSAGE_ID_SUFFIX);
+    }
+
+    /**
+     * @since 5.9.1
+     */
+    public String generateDevRegionId(String widgetName) {
+        return generateUniqueId(WIDGET_ID_PREFIX + widgetName
+                + DEV_REGION_ID_SUFFIX);
+    }
+
+    /**
+     * @since 5.9.1
+     */
+    public String generateDevContainerId(String widgetName) {
+        return generateUniqueId(WIDGET_ID_PREFIX + widgetName
+                + DEV_CONTAINER_ID_SUFFIX);
     }
 
     /**

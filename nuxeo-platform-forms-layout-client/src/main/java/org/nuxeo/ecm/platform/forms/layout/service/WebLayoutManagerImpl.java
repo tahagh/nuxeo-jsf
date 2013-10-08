@@ -64,8 +64,10 @@ import org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetTypeDescriptor;
 import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
 import org.nuxeo.ecm.platform.forms.layout.facelets.RenderVariables;
 import org.nuxeo.ecm.platform.forms.layout.facelets.WidgetTypeHandler;
+import org.nuxeo.ecm.platform.forms.layout.facelets.dev.DevTagHandler;
 import org.nuxeo.ecm.platform.forms.layout.functions.LayoutFunctions;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 
@@ -381,6 +383,9 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
             }
         }
         widget.setTypeCategory(getStoreCategory(wTypeCat));
+        if (Framework.isDevModeSet()) {
+            widget.setDefinition(wDef);
+        }
         return widget;
     }
 
@@ -498,11 +503,14 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
             }
         }
         int columns = layoutDef.getColumns();
-        Layout layout = new LayoutImpl(layoutDef.getName(), mode,
+        LayoutImpl layout = new LayoutImpl(layoutDef.getName(), mode,
                 layoutDef.getTemplate(mode), rows, columns,
                 layoutDef.getProperties(mode),
                 LayoutFunctions.computeLayoutDefinitionId(layoutDef));
         layout.setValueName(valueName);
+        if (Framework.isDevModeSet()) {
+            layout.setDefinition(layoutDef);
+        }
         return layout;
     }
 
@@ -528,6 +536,9 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
             wDef = getWidgetDefinition(widgetName);
         } else {
             wDef = getLayoutStore().getWidgetDefinition(cat, widgetName);
+        }
+        if (wDef != null) {
+            wDef.setGlobal(true);
         }
         return wDef;
     }
@@ -570,9 +581,43 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
             if (!subHandlersList.isEmpty()) {
                 subHandlers = subHandlersList.toArray(new FaceletHandler[0]);
             }
-            FaceletHandler fHandler = handler.getFaceletHandler(ctx, config,
-                    widget, subHandlers);
-            return fHandler;
+            FaceletHandler widgetHandler = handler.getFaceletHandler(ctx,
+                    config, widget, subHandlers);
+
+            // avoid stack overflow when using layout tags within the dev
+            // handler
+            ExpressionFactory eFactory = ctx.getExpressionFactory();
+            ValueExpression disableDevAttr = eFactory.createValueExpression(
+                    ctx, "#{nxlDevModeDisabled}", Boolean.class);
+            if (Framework.isDevModeSet()
+                    && !Boolean.TRUE.equals(disableDevAttr.getValue(ctx))) {
+                // decorate handler with dev handler
+                FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx,
+                        config);
+                FaceletHandler devHandler = handler.getDevFaceletHandler(ctx,
+                        config, widget);
+                if (devHandler == null) {
+                    return widgetHandler;
+                }
+                // expose the widget variable to sub dev handler
+                String widgetTagConfigId = widget.getTagConfigId();
+                Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();
+                ValueExpression widgetVe = eFactory.createValueExpression(
+                        widget, Widget.class);
+                variables.put(RenderVariables.widgetVariables.widget.name(),
+                        widgetVe);
+                List<String> blockedPatterns = new ArrayList<String>();
+                blockedPatterns.add(RenderVariables.widgetVariables.widget.name()
+                        + "*");
+                FaceletHandler devAliasHandler = helper.getAliasTagHandler(
+                        widgetTagConfigId, variables, blockedPatterns,
+                        devHandler);
+                String refId = widget.getName();
+                FaceletHandler widgetDevHandler = new DevTagHandler(config,
+                        refId, widgetHandler, devAliasHandler);
+                return widgetDevHandler;
+            }
+            return widgetHandler;
         }
     }
 
@@ -639,6 +684,11 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
                 wDef.isTranslated(), props, required, subWidgets, 0, null,
                 LayoutFunctions.computeWidgetDefinitionId(wDef));
         widget.setTypeCategory(wTypeCat);
+        widget.setDynamic(wDef.isDynamic());
+        widget.setGlobal(wDef.isGlobal());
+        if (Framework.isDevModeSet()) {
+            widget.setDefinition(wDef);
+        }
         return widget;
     }
 
@@ -654,6 +704,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
         WidgetDefinitionImpl wDef = new WidgetDefinitionImpl(wName, type,
                 label, helpLabel, Boolean.TRUE.equals(translated), null,
                 fieldDefinitions, properties, null);
+        wDef.setDynamic(true);
         return wDef;
     }
 

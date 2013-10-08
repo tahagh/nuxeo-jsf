@@ -1,0 +1,11 @@
+<div xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <h3>Widget '#{widget.name}'</h3>
+
+  <nxu:set var="nxlDevModeDisabled" value="true">
+    <nxl:layout name="widget_dev_layout" value="#{widget}" mode="view" />
+  </nxu:set>
+
+</div>

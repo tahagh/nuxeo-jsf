@@ -1106,6 +1106,9 @@
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TextWidgetTypeHandler
       </handler-class>
+      <property name="dev_template">
+        /widgets/dev/text_widget_dev_template.xhtml
+      </property>
     </widgetType>
 
     <widgetType name="int">

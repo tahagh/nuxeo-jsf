@@ -1,0 +1,12 @@
+<div xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <h3>Layout '#{layout.name}'</h3>
+
+  <nxu:set var="nxlDevModeDisabled" value="true">
+    <nxl:layout name="layout_dev_layout" value="#{layout}" mode="view"
+      template="/layouts/layout_div_template.xhtml"/>
+  </nxu:set>
+
+</div>
