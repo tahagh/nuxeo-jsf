@@ -24,7 +24,6 @@ import javax.faces.view.facelets.ComponentHandler;
 import javax.faces.view.facelets.CompositeFaceletHandler;
 import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.FaceletHandler;
-import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagAttributes;
 import javax.faces.view.facelets.TagConfig;
 
@@ -33,9 +32,6 @@ import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
 import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
 import org.nuxeo.ecm.platform.forms.layout.facelets.LeafFaceletHandler;
-import org.nuxeo.ecm.platform.ui.web.component.seam.UIHtmlText;
-
-import com.sun.faces.facelets.tag.TagAttributesImpl;
 
 /**
  * Hidden widget.
@@ -83,10 +79,12 @@ public class HiddenWidgetTypeHandler extends AbstractWidgetTypeHandler {
                     widgetTagConfigId, attributes, leaf,
                     HtmlInputHidden.COMPONENT_TYPE, null);
             if (BuiltinWidgetModes.PDF.equals(mode)) {
-                // add a surrounding p:html tag handler
-                return helper.getHtmlComponentHandler(widgetTagConfigId,
-                        new TagAttributesImpl(new TagAttribute[0]), output,
-                        UIHtmlText.class.getName(), null);
+                // FIXME: migrate to RichFaces
+                return output;
+                // // add a surrounding p:html tag handler
+                // return helper.getHtmlComponentHandler(widgetTagConfigId,
+                // new TagAttributesImpl(new TagAttribute[0]), output,
+                // UIHtmlText.class.getName(), null);
             } else {
                 return output;
             }

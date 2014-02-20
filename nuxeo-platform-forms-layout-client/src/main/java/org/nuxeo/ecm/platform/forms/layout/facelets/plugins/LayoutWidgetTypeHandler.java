@@ -22,7 +22,6 @@ import java.util.Arrays;
 import javax.faces.view.facelets.CompositeFaceletHandler;
 import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.FaceletHandler;
-import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagAttributes;
 import javax.faces.view.facelets.TagConfig;
 
@@ -33,10 +32,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
 import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
 import org.nuxeo.ecm.platform.forms.layout.facelets.LayoutTagHandler;
 import org.nuxeo.ecm.platform.forms.layout.facelets.LeafFaceletHandler;
-import org.nuxeo.ecm.platform.ui.web.component.seam.UIHtmlText;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
-
-import com.sun.faces.facelets.tag.TagAttributesImpl;
 
 /**
  * Widget rendering a layout
@@ -84,10 +80,12 @@ public class LayoutWidgetTypeHandler extends AbstractWidgetTypeHandler {
                 widgetTagConfigId, attributes, leaf);
         FaceletHandler res = new LayoutTagHandler(layoutTagConfig);
         if (BuiltinWidgetModes.PDF.equals(widgetMode)) {
-            // add a surrounding p:html tag handler
-            return helper.getHtmlComponentHandler(widgetTagConfigId,
-                    new TagAttributesImpl(new TagAttribute[0]), res,
-                    UIHtmlText.class.getName(), null);
+            // FIXME: migrate to RichFaces
+            return res;
+            // // add a surrounding p:html tag handler
+            // return helper.getHtmlComponentHandler(widgetTagConfigId,
+            // new TagAttributesImpl(new TagAttribute[0]), res,
+            // UIHtmlText.class.getName(), null);
         } else {
             return res;
         }

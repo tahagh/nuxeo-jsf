@@ -37,9 +37,6 @@ import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
 import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
 import org.nuxeo.ecm.platform.forms.layout.facelets.LeafFaceletHandler;
 import org.nuxeo.ecm.platform.ui.web.component.editor.UIHtmlEditor;
-import org.nuxeo.ecm.platform.ui.web.component.seam.UIHtmlText;
-
-import com.sun.faces.facelets.tag.TagAttributesImpl;
 
 /**
  * Html text widget.
@@ -105,10 +102,12 @@ public class HtmlTextWidgetTypeHandler extends AbstractWidgetTypeHandler {
                     widgetTagConfigId, attributes, leaf,
                     HtmlOutputText.COMPONENT_TYPE, null);
             if (BuiltinWidgetModes.PDF.equals(mode)) {
-                // add a surrounding p:html tag handler
-                return helper.getHtmlComponentHandler(widgetTagConfigId,
-                        new TagAttributesImpl(new TagAttribute[0]), output,
-                        UIHtmlText.class.getName(), null);
+                // FIXME: migrate to RichFaces
+                return output;
+                // // add a surrounding p:html tag handler
+                // return helper.getHtmlComponentHandler(widgetTagConfigId,
+                // new TagAttributesImpl(new TagAttribute[0]), output,
+                // UIHtmlText.class.getName(), null);
             } else {
                 return output;
             }
